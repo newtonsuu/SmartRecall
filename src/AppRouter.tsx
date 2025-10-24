@@ -1,57 +1,172 @@
-import React, { useState } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { LoginPage } from './pages/LoginPage';
-import { SignupPage } from './pages/SignupPage';
-import { HomePage } from './pages/HomePage';
-import { StudyPage } from './pages/StudyPage';
-import { AddPage } from './pages/AddPage';
-import { ProfilePage } from './pages/ProfilePage';
-import { SettingsPage } from './pages/SettingsPage';
-import { AIAssistantPage } from './pages/AIAssistantPage';
-import { FlashcardPage } from './pages/FlashcardPage';
-import { QuizPage } from './pages/QuizPage';
-import { SummaryPage } from './pages/SummaryPage';
-import { Layout } from './components/Layout';
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import { LoginPage } from "./pages/LoginPage";
+import { SignupPage } from "./pages/SignupPage";
+import { HomePage } from "./pages/HomePage";
+import { StudyPage } from "./pages/StudyPage";
+import { AddPage } from "./pages/AddPage";
+import { ProfilePage } from "./pages/ProfilePage";
+import { SettingsPage } from "./pages/SettingsPage";
+import { AIAssistantPage } from "./pages/AIAssistantPage";
+import { FlashcardPage } from "./pages/FlashcardPage";
+import { QuizPage } from "./pages/QuizPage";
+import { SummaryPage } from "./pages/SummaryPage";
+import { Layout } from "./components/Layout";
+import { useAuth } from "./auth/AuthProvider";
+import { EditFlashcardPage } from "./pages/EditFlashcardPage";
+import { EditQuizPage } from "./pages/EditQuizPage";
+import { EditSummaryPage } from "./pages/EditSummaryPage";
+import { EditProfilePage } from "./pages/EditProfilePage";
+
 export function AppRouter() {
-  // Mock authentication state (in a real app, this would be managed properly)
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const handleLogin = () => {
-    setIsAuthenticated(true);
-  };
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-  };
-  return <BrowserRouter>
+  const { profile, loading } = useAuth();
+
+  if (loading) return <div>Loading...</div>;
+
+  const ProtectedRoute = ({ children }: { children: React.ReactNode }) =>
+    profile ? (
+      <Layout>{children}</Layout>
+    ) : (
+      <Navigate to="/login" replace />
+    );
+
+  const PublicRoute = ({ children }: { children: React.ReactNode }) =>
+    profile ? <Navigate to="/" replace /> : <>{children}</>;
+
+  return (
+    <Router>
       <Routes>
-        <Route path="/login" element={isAuthenticated ? <Navigate to="/" /> : <LoginPage onLogin={handleLogin} />} />
-        <Route path="/signup" element={isAuthenticated ? <Navigate to="/" /> : <SignupPage onSignup={handleLogin} />} />
-        <Route path="/" element={isAuthenticated ? <Layout onLogout={handleLogout}>
-                <HomePage />
-              </Layout> : <Navigate to="/login" />} />
-        <Route path="/study" element={isAuthenticated ? <Layout onLogout={handleLogout}>
-                <StudyPage />
-              </Layout> : <Navigate to="/login" />} />
-        <Route path="/add" element={isAuthenticated ? <Layout onLogout={handleLogout}>
-                <AddPage />
-              </Layout> : <Navigate to="/login" />} />
-        <Route path="/profile" element={isAuthenticated ? <Layout onLogout={handleLogout}>
-                <ProfilePage />
-              </Layout> : <Navigate to="/login" />} />
-        <Route path="/settings" element={isAuthenticated ? <Layout onLogout={handleLogout}>
-                <SettingsPage onLogout={handleLogout} />
-              </Layout> : <Navigate to="/login" />} />
-        <Route path="/ai" element={isAuthenticated ? <Layout onLogout={handleLogout}>
-                <AIAssistantPage />
-              </Layout> : <Navigate to="/login" />} />
-        <Route path="/flashcard/:topic" element={isAuthenticated ? <Layout onLogout={handleLogout}>
-                <FlashcardPage />
-              </Layout> : <Navigate to="/login" />} />
-        <Route path="/quiz/:topic/:type" element={isAuthenticated ? <Layout onLogout={handleLogout}>
-                <QuizPage />
-              </Layout> : <Navigate to="/login" />} />
-        <Route path="/summary/:topic" element={isAuthenticated ? <Layout onLogout={handleLogout}>
-                <SummaryPage />
-              </Layout> : <Navigate to="/login" />} />
+        {/* Public routes */}
+        <Route
+          path="/login"
+          element={
+            <PublicRoute>
+              <LoginPage />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/signup"
+          element={
+            <PublicRoute>
+              <SignupPage />
+            </PublicRoute>
+          }
+        />
+
+        {/* Protected routes */}
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <HomePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/study"
+          element={
+            <ProtectedRoute>
+              <StudyPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/add"
+          element={
+            <ProtectedRoute>
+              <AddPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <SettingsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/ai"
+          element={
+            <ProtectedRoute>
+              <AIAssistantPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/flashcard/:id"
+          element={
+            <ProtectedRoute>
+              <FlashcardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/quiz/:id"
+          element={
+            <ProtectedRoute>
+              <QuizPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/summary/:id"
+          element={
+            <ProtectedRoute>
+              <SummaryPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/flashcard/:id/edit"
+          element={
+            <ProtectedRoute>
+              <EditFlashcardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/quiz/:id/edit"
+          element={
+            <ProtectedRoute>
+              <EditQuizPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/summary/:id/:edit"
+          element={
+            <ProtectedRoute>
+              <EditSummaryPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile/edit"
+          element={
+            <ProtectedRoute>
+              <EditProfilePage />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
-    </BrowserRouter>;
+    </Router>
+  );
 }
+
+export default AppRouter;

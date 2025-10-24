@@ -1,19 +1,14 @@
 import React from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { HomeIcon, BookOpenIcon, PlusCircleIcon, UserIcon, BrainIcon } from 'lucide-react';
-interface NavigationBarProps {
-  onLogout: () => void;
-}
-export function NavigationBar({
-  onLogout
-}: NavigationBarProps) {
+
+export function NavigationBar() {
   const location = useLocation();
-  const navigate = useNavigate();
   const isActive = (path: string) => {
     return location.pathname === path;
   };
   return <nav className="fixed bottom-0 w-full bg-white border-t border-gray-200">
-      <div className="max-w-md mx-auto px-4">
+      <div className="max-w-md px-4 mx-auto">
         <div className="flex justify-between items-center">
           <NavItem to="/" icon={<HomeIcon size={20} />} label="Home" isActive={isActive('/')} />
           <NavItem to="/study" icon={<BookOpenIcon size={20} />} label="Study" isActive={isActive('/study')} />

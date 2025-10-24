@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+button {
+  cursor: pointer;
+}
+
+/* Quick dark-mode overrides (no Tailwind reconfiguration) */
+html.dark body {
+  background: #0b1220 !important;
+  color: #e6eef8 !important;
+}
+
+/* Explicit light-mode overrides: when html does NOT have the 'dark' class,
+   make sure body and common bg utilities use the light colors so the
+   stored preference (light) always shows correctly even if the OS is dark. */
+html:not(.dark) body {
+  background: #f9fafb !important; /* tailwind bg-gray-50 default */
+  color: #111827 !important; /* tailwind text-gray-900 default */
+}
+
+html:not(.dark) .bg-gray-50 { background-color: #f9fafb !important; }
+html:not(.dark) .bg-white { background-color: #ffffff !important; }
+
+html.dark .bg-white { background-color: #0f1724 !important; }
+html.dark .bg-gray-50 { background-color: #071124 !important; }
+html.dark .text-gray-900 { color: #e6eef8 !important; }
+html.dark .text-gray-700 { color: #cbd5e1 !important; }
+html.dark .text-black { color: #ffffff !important; }
+html.dark .bg-gray-100 { background-color: #0b1220 !important; }
+html.dark .rounded-lg { /* ensure cards contrast */ box-shadow: none; }
+
+/* card-like container override */
+html.dark .shadow { box-shadow: none !important; }
+html.dark .bg-white.rounded-lg { border: 1px solid rgba(255,255,255,0.04); }
+
+/* links/buttons */
+html.dark a { color: #9bd0ff; }
+html.dark .text-gray-600 { color: #9aa6b2 !important; }
+
+/* small test box for quick verification */
+.sr-test-dark { padding: 12px; border-radius: 8px; margin-top: 12px; }
+html.dark .sr-test-dark { background: #0f1724; color: #e6eef8; border: 1px solid rgba(255,255,255,0.04); }
+
+/* AI assistant specific overrides */
+html.dark .bg-gray-100 { background-color: #0f1724 !important; }
+html.dark .text-gray-800 { color: #e6eef8 !important; }
+html.dark .prose, html.dark .prose p, html.dark .prose li { color: #e6eef8 !important; }
+html.dark .prose a { color: #9bd0ff !important; }
+html.dark .prose code { background: rgba(255,255,255,0.04); color: #e6eef8 !important; }
+
+/* input / borders */
+html.dark .border-gray-200 { border-color: rgba(255,255,255,0.04) !important; }
+html.dark .border-gray-300 { border-color: rgba(255,255,255,0.06) !important; }
+html.dark .focus\:ring-blue-500, html.dark .focus\:ring-2 { outline-color: rgba(59,130,246,0.6) !important; }
+html.dark input { background: #071124; color: #e6eef8; border-color: rgba(255,255,255,0.06); }
+
+/* typing indicator dots */
+html.dark .bg-gray-400 { background-color: #374151 !important; }
+

@@ -1,30 +1,61 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { UserIcon, MailIcon, Lock } from 'lucide-react';
-interface SignupPageProps {
-  onSignup: () => void;
-}
-export function SignupPage({
-  onSignup
-}: SignupPageProps) {
+import { supabase } from '../lib/supabaseClient';
+export function SignupPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const handleSignup = (e: React.FormEvent) => {
+  const [popup, setPopup] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Store user info in localStorage
-    localStorage.setItem('userEmail', email);
-    localStorage.setItem('userName', name);
-    onSignup();
+
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        // Store display name in user_metadata so you can read it later
+        data: { name },
+      },
+    });
+    if (error) {
+      showPopup("Signup failed: " + error.message, "error");
+      return;
+    }
   };
-  const handleSocialSignup = (provider: string) => {
-    // Mock social signup
-    localStorage.setItem('userEmail', 'test@gmail.com');
-    localStorage.setItem('userName', 'Test User');
-    onSignup();
+
+  const showPopup = (
+    message: string,
+    type: "success" | "error" = "success"
+  ) => {
+    setPopup({ message, type });
+    setTimeout(() => setPopup(null), 4000); // Fade after 4s
+  };
+
+  const handleSocialSignup = async (provider: "google" | "facebook") => {
+    showPopup("Redirecting to " + provider + " for signup...", "success");
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: window.location.origin,
+      },
+    });
+    if (error) showPopup("Social signup failed: " + error.message, "error");
   };
   return <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-4">
+      {/* Popup notification */}
+      {popup && (
+        <div
+          className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 rounded shadow-lg text-white transition-opacity duration-500 ${
+            popup.type === "success" ? "bg-green-500" : "bg-red-500"
+          }`}
+        >
+          {popup.message}
+        </div>
+      )}
       <div className="w-full max-w-md">
         <div className="text-center mb-10">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">SmartRecall</h1>
